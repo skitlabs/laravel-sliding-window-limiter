@@ -6,8 +6,8 @@ use BeyondCode\SlidingWindowLimiter\SlidingWindowLimiter;
 use BeyondCode\SlidingWindowLimiter\SlidingWindowLimiterServiceProvider;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
+use Illuminate\Support\Facades\Redis;
 use Orchestra\Testbench\TestCase;
-use Redis;
 
 class SlidingWindowLimiterTest extends TestCase
 {
@@ -16,7 +16,7 @@ class SlidingWindowLimiterTest extends TestCase
     {
         parent::setUp();
 
-        Redis::del('sliding-window-limiter-resource');
+        Redis::command('del', ['sliding-window-limiter-resource']);
     }
 
     protected function getPackageProviders($app)
@@ -133,9 +133,7 @@ class SlidingWindowLimiterTest extends TestCase
     {
         $limiter = SlidingWindowLimiter::create(CarbonInterval::minute(), 5);
 
-        foreach(range(1,10) as $i) {
-            $limiter->attempt('resource');
-        }
+        $this->makeAttempts($limiter, 'resource', 10);
 
         $this->assertSame(0, $limiter->getRemaining('resource'));
     }
@@ -145,9 +143,7 @@ class SlidingWindowLimiterTest extends TestCase
     {
         $limiter = SlidingWindowLimiter::create(CarbonInterval::minute(), 5);
 
-        foreach(range(1,10) as $i) {
-            $limiter->attempt('resource');
-        }
+        $this->makeAttempts($limiter, 'resource', 10);
 
         $this->assertSame(5, $limiter->getUsage('resource'));
     }
@@ -167,10 +163,10 @@ class SlidingWindowLimiterTest extends TestCase
         $this->assertTrue($limiter->attempt('resource'));
     }
 
-    protected function makeAttempts(SlidingWindowLimiter $limiter, string $string, int $int)
+    protected function makeAttempts(SlidingWindowLimiter $limiter, string $resource, int $attempts = 1)
     {
-        foreach(range(1,50) as $i) {
-            $limiter->attempt('resource');
+        for ($i = 0; $i < $attempts; $i++) {
+            $limiter->attempt($resource);
         }
     }
 }

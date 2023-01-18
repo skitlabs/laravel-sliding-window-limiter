@@ -16,15 +16,15 @@
         }
     ],
     "require": {
-        "php": "^7.3",
+        "php": "^8.0|^8.1|^8.2",
+        "illuminate/redis": "^9.48",
+        "illuminate/support": "^9.48",
         "nesbot/carbon": "^2.23.0",
-        "illuminate/support": "5.8.*|^6.0",
-        "illuminate/redis": "5.8.*|^6.0",
-        "predis/predis": "^1.1"
+        "predis/predis": "^2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0",
-        "orchestra/testbench": "^3.8|^4.0"
+        "orchestra/testbench": "^7.19",
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
